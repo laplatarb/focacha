@@ -1,4 +1,4 @@
-focacha
-=======
+# focacha
 
-Focacha is a Campfire clone.
+Focacha is an open source group chat. Basically, Focacha is an open source Campfire clone.
+
