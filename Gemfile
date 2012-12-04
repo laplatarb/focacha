@@ -1,0 +1,11 @@
+source 'http://rubygems.org'
+
+gem 'rake'
+gem 'sinatra', require: 'sinatra/base'
+gem 'minitest'
+gem 'faker'
+gem 'slim'
+gem 'omniauth-twitter'
+gem 'mongoid'
+gem 'html-pipeline', require: 'html/pipeline'
+gem 'rack-test', require: 'rack/test'

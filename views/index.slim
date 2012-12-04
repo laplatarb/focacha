@@ -1,0 +1,13 @@
+h1 Channels
+
+- if channels.any?
+  - channels.each do |channel|
+    div.channel
+      a href="/channels/#{channel._id}" #{channel.name}
+- else
+  p There are no channels
+
+form action="/channels" method="POST"
+  label New channel
+  input type="text" name="channel[name]" id="channel_name" value="#{params[:channel].nil? ? '' : params[:channel][:name]}"
+  input type="submit"

@@ -1,0 +1,9 @@
+h1 #{channel.name}
+
+- channel.messages.each do |message|
+  div.message
+    == "(#{message.user.uid}) #{html_pipeline.call(message.text)[:output]}"
+
+form action="/channels/#{channel.id}/messages" method="POST"
+  input type="text" name="message[text]" id="message_text" value="#{params[:message].nil? ? '' : params[:message][:text]}"
+  input type="submit"
