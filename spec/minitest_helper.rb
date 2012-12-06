@@ -3,9 +3,7 @@ ENV['RACK_ENV'] = 'test'
 require 'rubygems'
 require 'bundler'
 
-Bundler.require
-
-require 'minitest/autorun'
+Bundler.require :default, :test
 
 begin
   require 'focacha'

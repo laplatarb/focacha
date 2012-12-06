@@ -1,14 +1,21 @@
 source 'http://rubygems.org'
 
-gem 'rake'
-gem 'sinatra', require: 'sinatra/base'
-gem 'minitest'
-gem 'faker'
-gem 'slim'
-gem 'omniauth-twitter'
-gem 'omniauth-facebook'
-gem 'mongoid'
 gem 'html-pipeline', require: 'html/pipeline'
-gem 'rack-test', require: 'rack/test'
-gem 'twitter'
 gem 'koala'
+gem 'mongoid'
+gem 'omniauth-facebook'
+gem 'omniauth-twitter'
+gem 'sinatra', require: 'sinatra/base'
+gem 'slim'
+gem 'thin'
+gem 'twitter'
+
+group :development do
+  gem 'rake'
+end
+
+group :test do
+  gem 'faker'
+  gem 'minitest', require: 'minitest/autorun'
+  gem 'rack-test', require: 'rack/test'
+end

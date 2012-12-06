@@ -5,9 +5,6 @@ require_relative 'models/user'
 module Focacha
   class Application < Sinatra::Base
     configure do
-      # logging
-      enable :logging
-
       # method override
       use Rack::MethodOverride
 
