@@ -4,4 +4,10 @@ html
     title Focacha
 
   body
+
+    = "Hi, #{current_user.name}."
+    form action="/auth/destroy" method="POST"
+      input type="hidden" name="_method" value="delete"
+      input type="submit" value="Sign out?"
+
     == yield

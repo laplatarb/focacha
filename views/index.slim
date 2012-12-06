@@ -4,8 +4,8 @@ h1 Channels
   - channels.each do |channel|
     div.channel
       div.name
-        a href="/channels/#{channel._id}" #{channel.name}
-      div.meta Created by #{channel.user.uid}
+        a href="/channels/#{channel.id}" #{channel.name}
+      div.meta Created by #{channel.user.name}
     hr
 - else
   p There are no channels

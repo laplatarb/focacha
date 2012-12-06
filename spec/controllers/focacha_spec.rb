@@ -18,9 +18,9 @@ describe Focacha::Application do
   end
 
   def sign_in
-    uid = Random.new.rand(999)
-    User.create provider: 'twitter', uid: uid
-    session uid: uid
+    #User.create provider: 'twitter', uid: Random.new.rand(999), twitter_secret: Random.new.rand(999), twitter_token: Random.new.rand(999)
+    user = User.create provider: 'test_provider', uid: Random.new.rand(999)
+    session uid: user.uid
   end
 
   describe 'GET /' do
@@ -55,6 +55,20 @@ describe Focacha::Application do
     end
   end
 
+  describe 'DELETE /auth/destroy' do
+    describe 'when the user is authenticated' do
+      it 'must destroy the current session' do
+        skip 'Implement this test, please!'
+      end
+    end
+
+    describe 'when the user is not authenticated' do
+      it 'must destroy the current session' do
+        skip 'Implement this test, please!'
+      end
+    end
+  end
+
   describe 'POST /channels' do
     describe 'when the user is authenticated' do
       before do
@@ -69,7 +83,8 @@ describe Focacha::Application do
       end
 
       it 'wont create a channel if channel[name] is not unique' do
-        channel = Channel.create name: Faker::Name.name
+        user = User.create provider: 'test_provider', uid: Random.new.rand(999)
+        channel = Channel.create name: Faker::Name.name, user: user
         channels_count = Channel.count
         post '/channels', channel: { name: channel.name }
         last_response.status.must_equal 200

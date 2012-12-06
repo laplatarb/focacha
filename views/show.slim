@@ -6,7 +6,7 @@ hr
   div.message
     div.text
       == html_pipeline.call(message.text)[:output]
-    div.meta Created by #{message.user.uid} at #{message.created_at}
+    div.meta Created by #{message.user.name} at #{message.created_at}
   hr
 
 form action="/channels/#{channel.id}/messages" method="POST"

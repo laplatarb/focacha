@@ -8,12 +8,16 @@ module Focacha
       # logging
       enable :logging
 
+      # method override
+      use Rack::MethodOverride
+
       # mongoid
       Mongoid.load! 'config/mongoid.yml', environment
 
       # omniauth
       use OmniAuth::Builder do
-        provider :twitter, ENV['CONSUMER_KEY'], ENV['CONSUMER_SECRET']
+        provider :facebook, ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET']
+        provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
       end
 
       # sessions
@@ -23,7 +27,14 @@ module Focacha
       # slim
       set :slim, layout: :'layouts/focacha'
 
+      # static
       set :static, true
+
+      # twitter
+      Twitter.configure do |config|
+        config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
+        config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
+      end
     end
 
     helpers do
@@ -59,13 +70,18 @@ module Focacha
 
     get '/auth/:provider/callback' do
       auth = request.env['omniauth.auth']
-      user = User.find_or_create_by(provider: auth['provider'], uid: auth['uid'])
+      user = User.find_by(provider: auth['provider'], uid: auth['uid']) || User.create_with_omniauth(auth)
       session[:uid] = user.uid
       redirect '/'
     end
 
     get '/auth/failure' do
       slim :'auth/failure', layout: :'layouts/unauthorized'
+    end
+
+    delete '/auth/destroy' do
+      session[:uid] = nil
+      redirect '/'
     end
 
     post '/channels' do
@@ -76,7 +92,7 @@ module Focacha
         channel.save
         redirect '/', 301
       else
-        slim :index, locals: { channels: Channel.all, channel: channel }
+        slim :index, locals: { channels: Channel.all, channel: Channel.new }
       end
     end
 
