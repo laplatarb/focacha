@@ -18,7 +18,7 @@ describe Focacha::Application do
   end
 
   def sign_in
-    #User.create provider: 'twitter', uid: Random.new.rand(999), twitter_secret: Random.new.rand(999), twitter_token: Random.new.rand(999)
+    # do not use a real user!
     user = User.create provider: 'test_provider', uid: Random.new.rand(999)
     session uid: user.uid
   end
