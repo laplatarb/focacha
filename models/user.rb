@@ -45,7 +45,7 @@ class User
   private
 
   def adapter
-    case provider
+    @adapter ||= case provider
     when 'facebook'
       graph = Koala::Facebook::API.new facebook_token
       graph.get_object 'me'

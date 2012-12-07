@@ -5,10 +5,17 @@ require_relative 'models/user'
 module Focacha
   class Application < Sinatra::Base
     configure do
+      # logging
+      enable :logging
+
       # method override
       use Rack::MethodOverride
 
       # mongoid
+      Mongoid.logger = Logger.new($stdout)
+      Moped.logger = Logger.new($stdout)
+      Mongoid.logger.level = Logger::DEBUG
+      Moped.logger.level = Logger::DEBUG
       Mongoid.load! 'config/mongoid.yml', environment
 
       # omniauth
@@ -20,6 +27,10 @@ module Focacha
       # sessions
       enable :sessions
       set :session_secret, 'focacha secret'
+
+      # sinatra-contrib
+      register Sinatra::Namespace
+      register Sinatra::Reloader if environment == :development
 
       # slim
       set :slim, layout: :'layouts/focacha'
@@ -62,52 +73,60 @@ module Focacha
     end
 
     get '/' do
-      slim :index, locals: { channels: Channel.all, channel: Channel.new }
+      redirect '/channels'
     end
 
-    get '/auth/:provider/callback' do
-      auth = request.env['omniauth.auth']
-      user = User.find_by(provider: auth['provider'], uid: auth['uid']) || User.create_with_omniauth(auth)
-      session[:uid] = user.uid
-      redirect '/'
-    end
+    namespace '/auth' do
+      get '/:provider/callback' do
+        auth = request.env['omniauth.auth']
+        user = User.find_by(provider: auth['provider'], uid: auth['uid']) || User.create_with_omniauth(auth)
+        session[:uid] = user.uid
+        redirect '/'
+      end
 
-    get '/auth/failure' do
-      slim :'auth/failure', layout: :'layouts/unauthorized'
-    end
+      get '/failure' do
+        slim :'auth/failure', layout: :'layouts/unauthorized'
+      end
 
-    delete '/auth/destroy' do
-      session[:uid] = nil
-      redirect '/'
-    end
-
-    post '/channels' do
-      channel = Channel.new params[:channel]
-      channel.user = current_user
-
-      if channel.valid?
-        channel.save
-        redirect '/', 301
-      else
-        slim :index, locals: { channels: Channel.all, channel: Channel.new }
+      delete '/destroy' do
+        session[:uid] = nil
+        redirect '/'
       end
     end
 
-    get '/channels/:id' do
-      channel = Channel.find_by(id: params[:id])
-      slim :show, locals: { channel: channel }
-    end
+    namespace '/channels' do
+      get do
+        slim :'channels/index', locals: { channels: Channel.all, channel: Channel.new }
+      end
 
-    post '/channels/:id/messages' do
-      channel = Channel.find_by(id: params[:id])
-      message = channel.messages.new params[:message]
-      message.user = current_user
+      post do
+        channel = Channel.new params[:channel]
+        channel.user = current_user
 
-      if message.valid?
-        message.save
-        redirect "/channels/#{channel.id}", 301
-      else
-        slim :show, locals: { channel: channel }
+        if channel.valid?
+          channel.save
+          redirect '/', 301
+        else
+          slim :'channels/index', locals: { channels: Channel.all, channel: Channel.new }
+        end
+      end
+
+      get '/:id' do
+        channel = Channel.find_by(id: params[:id])
+        slim :'channels/show', locals: { channel: channel }
+      end
+
+      post '/:id/messages' do
+        channel = Channel.find_by(id: params[:id])
+        message = channel.messages.new params[:message]
+        message.user = current_user
+
+        if message.valid?
+          message.save
+          redirect "/channels/#{channel.id}", 301
+        else
+          slim :'channels/show', locals: { channel: channel }
+        end
       end
     end
   end
