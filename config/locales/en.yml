@@ -1,0 +1,17 @@
+views:
+  auth:
+    facebook: Sign in with facebook
+    failure: Sign in failure
+    twitter: Sign in with twitter
+  channels:
+    change_current_topic: Change current topic
+    create: Create channel
+    created_by: Created by %1
+    created_by_at: Created by %1 at %2
+    current_topic: 'Current topic: %1'
+    empty: There are no channels
+    index: Channels
+    new: New channel
+    no_current_topic: No current topic
+  layout:
+    sign_out: Sign out
