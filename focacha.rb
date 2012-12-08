@@ -34,7 +34,7 @@ module Focacha
 
       # sinatra-r18n
       register Sinatra::R18n
-      R18n::I18n.default = 'es'
+      R18n::I18n.default = 'en'
       R18n.default_places { 'config/locales' }
 
       # static
