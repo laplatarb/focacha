@@ -26,7 +26,7 @@ module Focacha
 
       # sessions
       enable :sessions
-      set :session_secret, 'focacha secret'
+      set :session_secret, 'f0c4ch4'
 
       # sinatra-contrib
       register Sinatra::Namespace
