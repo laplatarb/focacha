@@ -9,7 +9,7 @@ module Focacha
       enable :logging
 
       # method override
-      use Rack::MethodOverride
+      enable :method_override
 
       # mongoid
       #Mongoid.logger = Logger.new($stdout)
@@ -32,8 +32,10 @@ module Focacha
       register Sinatra::Namespace
       register Sinatra::Reloader if environment == :development
 
-      # slim
-      set :slim, layout: :'layouts/focacha'
+      # sinatra-r18n
+      register Sinatra::R18n
+      R18n::I18n.default = 'es'
+      R18n.default_places { 'config/locales' }
 
       # static
       set :static, true
@@ -96,7 +98,7 @@ module Focacha
 
     namespace '/channels' do
       get do
-        slim :'channels/index', locals: { channels: Channel.all, channel: Channel.new }
+        slim :'channels/index', layout: :'layouts/focacha', locals: { channels: Channel.all, channel: Channel.new }
       end
 
       post do
@@ -107,13 +109,13 @@ module Focacha
           channel.save
           redirect '/'
         else
-          slim :'channels/index', locals: { channels: Channel.all, channel: Channel.new }
+          slim :'channels/index', layout: :'layouts/focacha', locals: { channels: Channel.all, channel: Channel.new }
         end
       end
 
       get '/:id' do
         channel = Channel.find_by(id: params[:id])
-        slim :'channels/show', locals: { channel: channel }
+        slim :'channels/show', layout: :'layouts/focacha', locals: { channel: channel }
       end
 
       put '/:id' do
@@ -131,7 +133,7 @@ module Focacha
           message.save
           redirect "/channels/#{channel.id}"
         else
-          slim :'channels/show', locals: { channel: channel }
+          slim :'channels/show', layout: :'layouts/focacha', locals: { channel: channel }
         end
       end
     end

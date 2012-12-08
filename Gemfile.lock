@@ -78,6 +78,7 @@ GEM
     pygments.rb (0.3.2)
       posix-spawn (~> 0.3.6)
       yajl-ruby (~> 1.1.0)
+    r18n-core (1.1.3)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
@@ -99,6 +100,9 @@ GEM
       rack-test
       sinatra (~> 1.3.0)
       tilt (~> 1.3)
+    sinatra-r18n (1.1.3)
+      r18n-core (= 1.1.3)
+      sinatra (>= 1.3)
     slim (1.3.4)
       temple (~> 0.5.5)
       tilt (~> 1.3.3)
@@ -130,6 +134,7 @@ DEPENDENCIES
   rake
   sinatra
   sinatra-contrib
+  sinatra-r18n
   slim
   thin
   twitter

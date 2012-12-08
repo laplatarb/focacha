@@ -1,4 +1,4 @@
-h1 Channels
+h1 #{t.views.channels.index}
 
 - if channels.any?
   - channels.each do |channel|
@@ -7,15 +7,15 @@ h1 Channels
         a href="/channels/#{channel.id}" #{channel.name}
       div.current_topic
         - if channel.current_topic.present?
-          == "Current topic: #{html_pipeline.call(channel.current_topic)[:output]}"
+          == t.views.channels.current_topic(html_pipeline.call(channel.current_topic)[:output])
         - else
-          = "No current topic"
-      div.meta Created by #{channel.user.name}
+          = t.views.channels.no_current_topic
+      div.meta #{t.views.channels.created_by(channel.user.name)}
     hr
 - else
-  p There are no channels
+  p #{t.views.channels.empty}
 
 form action="/channels" method="POST"
-  label New channel
+  label #{t.views.channels.new}
   input type="text" name="channel[name]" id="channel_name" value="#{params[:channel].nil? ? '' : params[:channel][:name]}"
-  input type="submit"
+  input type="submit" value="#{t.views.channels.create}"
