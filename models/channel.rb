@@ -7,6 +7,7 @@ class Channel
   embeds_many :messages
 
   # fields
+  field :current_topic
   field :name
 
   # validations

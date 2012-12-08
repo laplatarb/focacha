@@ -1,5 +1,18 @@
 h1 #{channel.name}
 
+div#current_topic
+  - if channel.current_topic.present?
+    == "#{html_pipeline.call(channel.current_topic)[:output]}"
+  - else
+    == "There is no current topic"
+
+div#current_topic_form
+  form action="/channels/#{channel.id}" method="POST"
+    input type="hidden" name="_method" value="put"
+    label for="channel[current_topic]" Change current topic
+    input type="text" name="channel[current_topic]" id="current_topic_id"
+    input type="submit"
+
 hr
 
 - channel.messages.each do |message|

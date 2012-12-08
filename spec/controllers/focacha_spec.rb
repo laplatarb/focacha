@@ -29,42 +29,91 @@ describe Focacha::Application do
         sign_in
       end
 
-      it 'must show all channels' do
+      it 'must redirect to /channels' do
         get '/'
-        last_response.body.wont_match /Sign in with twitter/
+        last_response.must_be :redirection?
+        last_response.header['Location'].must_match '/channels'
       end
     end
 
     describe 'when the user is not authenticated' do
-      it 'must show "Sign in with twitter" link' do
+      it 'must halt with 401 status code' do
         get '/'
-        last_response.body.must_match /Sign in with twitter/
+        last_response.status.must_equal 401
       end
     end
   end
 
   describe 'GET /auth/:provider/callback' do
-    it 'must have a real test' do
-      skip 'Implement this test, please!'
-    end
-  end
-
-  describe 'GET /auth/failure' do
-    it 'must have a real test' do
-      skip 'Implement this test, please!'
-    end
-  end
-
-  describe 'DELETE /auth/destroy' do
     describe 'when the user is authenticated' do
-      it 'must destroy the current session' do
+      before do
+        sign_in
+      end
+
+      it 'must have a real test' do
         skip 'Implement this test, please!'
       end
     end
 
     describe 'when the user is not authenticated' do
-      it 'must destroy the current session' do
+      it 'must have a real test' do
         skip 'Implement this test, please!'
+      end
+    end
+  end
+
+  describe 'GET /auth/failure' do
+    describe 'when the user is authenticated' do
+      before do
+        sign_in
+      end
+
+      it 'must have a real test' do
+        skip 'Implement this test, please!'
+      end
+    end
+
+    describe 'when the user is not authenticated' do
+      it 'must have a real test' do
+        skip 'Implement this test, please!'
+      end
+    end
+  end
+
+  describe 'DELETE /auth/destroy' do
+    describe 'when the user is authenticated' do
+      before do
+        sign_in
+      end
+
+      it 'must have a real test' do
+        skip 'Implement this test, please!'
+      end
+    end
+
+    describe 'when the user is not authenticated' do
+      it 'must have a real test' do
+        skip 'Implement this test, please!'
+      end
+    end
+  end
+
+  describe 'GET /channels' do
+    describe 'when the user is authenticated' do
+      before do
+        sign_in
+      end
+
+      it 'must show all channels' do
+        get '/channels'
+        last_response.must_be :ok?
+      end
+    end
+
+    describe 'when the user is not authenticated' do
+      it 'wont show all channels' do
+        get '/channels'
+        last_response.status.must_equal 401
       end
     end
   end
@@ -78,7 +127,7 @@ describe Focacha::Application do
       it 'wont create a channel if channel[name] is not present' do
         channels_count = Channel.count
         post '/channels', channel: { name: '' }
-        last_response.status.must_equal 200
+        last_response.must_be :ok?
         Channel.count.must_equal channels_count
       end
 
@@ -87,14 +136,14 @@ describe Focacha::Application do
         channel = Channel.create name: Faker::Name.name, user: user
         channels_count = Channel.count
         post '/channels', channel: { name: channel.name }
-        last_response.status.must_equal 200
+        last_response.must_be :ok?
         Channel.count.must_equal channels_count
       end
 
       it 'must create a channel' do
         channels_count = Channel.count
         post '/channels', channel: { name: Faker::Name.name }
-        last_response.status.must_equal 301
+        last_response.must_be :redirection?
         Channel.count.wont_equal channels_count
       end
     end
@@ -133,7 +182,7 @@ describe Focacha::Application do
       it 'must show channel' do
         channel = Channel.create name: Faker::Name.name
         get "/channels/#{channel.id}"
-        last_response.status.must_equal 200
+        last_response.must_be :ok?
       end
     end
 
@@ -142,6 +191,54 @@ describe Focacha::Application do
         channel = Channel.create name: Faker::Name.name
         get "/channels/#{channel.id}"
         last_response.status.must_equal 401
+      end
+    end
+  end
+
+  describe 'PUT /channels/:id' do
+    describe 'when the user is authenticated' do
+      before do
+        sign_in
+      end
+
+      describe 'when current_topic is not provided' do
+        it 'must unset channel\'s current topic' do
+          channel = Channel.create name: Faker::Name.name
+          put "/channels/#{channel.id}", channel: { current_topic: '' }
+          last_response.must_be :redirection?
+          channel.reload
+          channel.current_topic.must_be :blank?
+        end
+      end
+
+      describe 'when current_topic is provided' do
+        it 'must set channel\'s current topic' do
+          channel = Channel.create name: Faker::Name.name
+          current_topic = Faker::Lorem.words
+          put "/channels/#{channel.id}", channel: { current_topic: current_topic }
+          last_response.must_be :redirection?
+          channel.reload
+          channel.current_topic.must_equal current_topic
+        end
+      end
+    end
+
+    describe 'when the user is not authenticated' do
+      describe 'when current_topic is not provided' do
+        it 'wont unset channel\'s current topic' do
+          channel = Channel.create name: Faker::Name.name
+          put "/channels/#{channel.id}", channel: { current_topic: '' }
+          last_response.status.must_equal 401
+        end
+      end
+
+      describe 'when current_topic is provided' do
+        it 'wont set channel\'s current topic' do
+          channel = Channel.create name: Faker::Name.name
+          current_topic = Faker::Lorem.words
+          put "/channels/#{channel.id}", channel: { current_topic: current_topic }
+          last_response.status.must_equal 401
+        end
       end
     end
   end
@@ -156,7 +253,7 @@ describe Focacha::Application do
         channel = Channel.create name: Faker::Name.name
         messages_count = channel.messages.count
         post "/channels/#{channel.id}/messages", message: { text: '' }
-        last_response.status.must_equal 200
+        last_response.must_be :ok?
         channel.reload
         channel.messages.count.must_equal messages_count
       end
@@ -165,7 +262,7 @@ describe Focacha::Application do
         channel = Channel.create name: Faker::Name.name
         messages_count = channel.messages.count
         post "/channels/#{channel.id}/messages", message: { text: Faker::Lorem.paragraphs }
-        last_response.status.must_equal 301
+        last_response.must_be :redirection?
         channel.reload
         channel.messages.count.wont_equal messages_count
       end

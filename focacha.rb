@@ -12,10 +12,10 @@ module Focacha
       use Rack::MethodOverride
 
       # mongoid
-      Mongoid.logger = Logger.new($stdout)
-      Moped.logger = Logger.new($stdout)
-      Mongoid.logger.level = Logger::DEBUG
-      Moped.logger.level = Logger::DEBUG
+      #Mongoid.logger = Logger.new($stdout)
+      #Moped.logger = Logger.new($stdout)
+      #Mongoid.logger.level = Logger::DEBUG
+      #Moped.logger.level = Logger::DEBUG
       Mongoid.load! 'config/mongoid.yml', environment
 
       # omniauth
@@ -105,7 +105,7 @@ module Focacha
 
         if channel.valid?
           channel.save
-          redirect '/', 301
+          redirect '/'
         else
           slim :'channels/index', locals: { channels: Channel.all, channel: Channel.new }
         end
@@ -116,6 +116,12 @@ module Focacha
         slim :'channels/show', locals: { channel: channel }
       end
 
+      put '/:id' do
+        channel = Channel.find_by(id: params[:id])
+        channel.update_attributes params[:channel]
+        redirect "/channels/#{channel.id}"
+      end
+
       post '/:id/messages' do
         channel = Channel.find_by(id: params[:id])
         message = channel.messages.new params[:message]
@@ -123,7 +129,7 @@ module Focacha
 
         if message.valid?
           message.save
-          redirect "/channels/#{channel.id}", 301
+          redirect "/channels/#{channel.id}"
         else
           slim :'channels/show', locals: { channel: channel }
         end
