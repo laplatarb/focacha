@@ -34,8 +34,8 @@ module Focacha
 
       # sinatra-contrib
       register Sinatra::Namespace
-      register Sinatra::Reloader if environment == :development
-
+      register Sinatra::Reloader if development?
+      
       # sinatra-r18n
       register Sinatra::R18n
       R18n::I18n.default = 'en'
@@ -43,7 +43,7 @@ module Focacha
 
       # static
       set :static, true
-
+      
       # twitter
       Twitter.configure do |config|
         config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
