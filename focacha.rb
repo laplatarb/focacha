@@ -1,5 +1,6 @@
 require_relative 'models/channel'
 require_relative 'models/message'
+require_relative 'models/current_topic_change_message'
 require_relative 'models/user'
 
 module Focacha
@@ -122,9 +123,10 @@ module Focacha
         slim :'channels/show', layout: :'layouts/focacha', locals: { channel: channel }
       end
 
-      put '/:id' do
+      put '/:id/change_current_topic' do
         channel = Channel.find_by(id: params[:id])
         channel.update_attributes params[:channel]
+        channel.messages.create({ text: channel.current_topic, user: current_user }, CurrentTopicChangeMessage)
         redirect "/channels/#{channel.id}"
       end
 

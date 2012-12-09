@@ -10,5 +10,5 @@ class Message
   field :text
 
   # validations
-  validates :text, presence: true
+  validates :text, presence: true, if: Proc.new { |message| message._type != 'CurrentTopicChangeMessage' }
 end

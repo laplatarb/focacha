@@ -195,7 +195,7 @@ describe Focacha::Application do
     end
   end
 
-  describe 'PUT /channels/:id' do
+  describe 'PUT /channels/:id/change_current_topic' do
     describe 'when the user is authenticated' do
       before do
         sign_in
@@ -204,21 +204,25 @@ describe Focacha::Application do
       describe 'when current_topic is not provided' do
         it 'must unset channel\'s current topic' do
           channel = Channel.create name: Faker::Name.name
-          put "/channels/#{channel.id}", channel: { current_topic: '' }
+          messages_count = channel.messages.count
+          put "/channels/#{channel.id}/change_current_topic", channel: { current_topic: '' }
           last_response.must_be :redirection?
           channel.reload
           channel.current_topic.must_be :blank?
+          channel.messages.count.wont_equal messages_count
         end
       end
 
       describe 'when current_topic is provided' do
         it 'must set channel\'s current topic' do
           channel = Channel.create name: Faker::Name.name
+          messages_count = channel.messages.count
           current_topic = Faker::Lorem.words
-          put "/channels/#{channel.id}", channel: { current_topic: current_topic }
+          put "/channels/#{channel.id}/change_current_topic", channel: { current_topic: current_topic }
           last_response.must_be :redirection?
           channel.reload
           channel.current_topic.must_equal current_topic
+          channel.messages.count.wont_equal messages_count
         end
       end
     end
@@ -227,7 +231,7 @@ describe Focacha::Application do
       describe 'when current_topic is not provided' do
         it 'wont unset channel\'s current topic' do
           channel = Channel.create name: Faker::Name.name
-          put "/channels/#{channel.id}", channel: { current_topic: '' }
+          put "/channels/#{channel.id}/change_current_topic", channel: { current_topic: '' }
           last_response.status.must_equal 401
         end
       end
@@ -236,7 +240,7 @@ describe Focacha::Application do
         it 'wont set channel\'s current topic' do
           channel = Channel.create name: Faker::Name.name
           current_topic = Faker::Lorem.words
-          put "/channels/#{channel.id}", channel: { current_topic: current_topic }
+          put "/channels/#{channel.id}/change_current_topic", channel: { current_topic: current_topic }
           last_response.status.must_equal 401
         end
       end
