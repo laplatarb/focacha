@@ -1,9 +1,11 @@
 source 'http://rubygems.org'
 
+gem 'google_plus'
 gem 'html-pipeline', require: 'html/pipeline'
 gem 'koala'
 gem 'mongoid'
 gem 'omniauth-facebook'
+gem 'omniauth-google-oauth2'
 gem 'omniauth-twitter'
 gem 'sinatra', require: 'sinatra/base'
 gem 'sinatra-contrib'

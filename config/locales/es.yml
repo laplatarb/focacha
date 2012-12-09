@@ -2,6 +2,7 @@ views:
   auth:
     facebook: Iniciar sesión con facebook
     failure: Ocurrió un error en la autenticación
+    google_oauth2: Iniciar sesión con google
     twitter: Iniciar sesión con twitter
   channels:
     change_current_topic: Cambiar tema actual

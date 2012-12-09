@@ -37,6 +37,8 @@ class User
     case provider
     when 'facebook'
       adapter['name']
+    when 'google_oauth2'
+      "#{adapter.attributes['name']['givenName']} #{adapter.attributes['name']['familyName']}"
     when 'twitter'
       adapter.name
     end
@@ -49,6 +51,8 @@ class User
     when 'facebook'
       graph = Koala::Facebook::API.new facebook_token
       graph.get_object 'me'
+    when 'google_oauth2'
+      GooglePlus::Person.get(uid.to_i)
     when 'twitter'
       client = Twitter::Client.new oauth_token_secret: twitter_secret, oauth_token: twitter_token
       client.user(uid.to_i)

@@ -5,6 +5,9 @@ require_relative 'models/user'
 module Focacha
   class Application < Sinatra::Base
     configure do
+      # google_plus
+      GooglePlus.api_key = ENV['GOOGLE_API_KEY']
+
       # logging
       enable :logging
 
@@ -21,6 +24,7 @@ module Focacha
       # omniauth
       use OmniAuth::Builder do
         provider :facebook, ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET']
+        provider :google_oauth2, ENV['GOOGLE_CONSUMER_KEY'], ENV['GOOGLE_CONSUMER_SECRET'], { access_type: 'online', approval_prompt: '' }
         provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
       end
 
