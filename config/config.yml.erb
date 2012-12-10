@@ -1,3 +1,5 @@
+# Focacha main configuration
+
 development:
   auth:
     facebook:
@@ -19,5 +21,41 @@ development:
     secret: <%= Digest::SHA1.hexdigest "f0c4ch4-#{Time.now}" %>
 
 production:
+  auth:
+    facebook:
+      enable: true
+      app_id: <%= ENV['FACEBOOK_APP_ID'] %>
+      secret: <%= ENV['FACEBOOK_SECRET'] %>
+    google:
+      enable: true
+      api_key: <%= ENV['GOOGLE_API_KEY'] %>
+      consumer_key: <%= ENV['GOOGLE_CONSUMER_KEY'] %>
+      consumer_secret: <%= ENV['GOOGLE_CONSUMER_SECRET'] %>
+    twitter:
+      enable: true
+      consumer_key: <%= ENV['TWITTER_CONSUMER_KEY'] %>
+      consumer_secret: <%= ENV['TWITTER_CONSUMER_SECRET'] %>
+  i18n:
+    default_locale: 'es'
+  session:
+  secret: <%= Digest::SHA1.hexdigest "f0c4ch4-#{Time.now}" %>
 
 test:
+  auth:
+    facebook:
+      enable: true
+      app_id: <%= ENV['FACEBOOK_APP_ID'] %>
+      secret: <%= ENV['FACEBOOK_SECRET'] %>
+    google:
+      enable: true
+      api_key: <%= ENV['GOOGLE_API_KEY'] %>
+      consumer_key: <%= ENV['GOOGLE_CONSUMER_KEY'] %>
+      consumer_secret: <%= ENV['GOOGLE_CONSUMER_SECRET'] %>
+    twitter:
+      enable: true
+      consumer_key: <%= ENV['TWITTER_CONSUMER_KEY'] %>
+      consumer_secret: <%= ENV['TWITTER_CONSUMER_SECRET'] %>
+  i18n:
+    default_locale: 'es'
+  session:
+  secret: <%= Digest::SHA1.hexdigest "f0c4ch4-#{Time.now}" %>
