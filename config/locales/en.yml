@@ -9,7 +9,6 @@ views:
     create: Create channel
     created_by: Created by %1
     created_by_at: Created by %1 at %2
-    current_topic: 'Current topic: %1'
     empty: There are no channels
     index: Channels
     new: New channel

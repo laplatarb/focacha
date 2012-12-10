@@ -9,7 +9,6 @@ views:
     create: Crear canal
     created_by: Creado por %1
     created_by_at: Creado por %1 el %2
-    current_topic: 'Tema actual: %1'
     empty: No hay ningún canal
     index: Canales
     new: Nuevo canal

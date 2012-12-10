@@ -1,3 +1,24 @@
+GIT
+  remote: https://github.com/sinatra/sinatra-contrib.git
+  revision: 204713dce6df6528a837fb58fc956bee7cfcbc18
+  specs:
+    sinatra-contrib (1.4.0)
+      backports (>= 2.0)
+      eventmachine
+      rack-protection
+      rack-test
+      sinatra (~> 1.4.0)
+      tilt (~> 1.3)
+
+GIT
+  remote: https://github.com/sinatra/sinatra.git
+  revision: cdd461896afaa264f5417fdb54a2e7c35bd3878d
+  specs:
+    sinatra (1.4.0)
+      rack (~> 1.3, >= 1.3.6)
+      rack-protection (~> 1.2)
+      tilt (~> 1.3, >= 1.3.3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -100,17 +121,6 @@ GEM
     sanitize (2.0.3)
       nokogiri (>= 1.4.4, < 1.6)
     simple_oauth (0.2.0)
-    sinatra (1.3.3)
-      rack (~> 1.3, >= 1.3.6)
-      rack-protection (~> 1.2)
-      tilt (~> 1.3, >= 1.3.3)
-    sinatra-contrib (1.3.2)
-      backports (>= 2.0)
-      eventmachine
-      rack-protection
-      rack-test
-      sinatra (~> 1.3.0)
-      tilt (~> 1.3)
     sinatra-r18n (1.1.3)
       r18n-core (= 1.1.3)
       sinatra (>= 1.3)
@@ -145,8 +155,8 @@ DEPENDENCIES
   omniauth-twitter
   rack-test
   rake
-  sinatra
-  sinatra-contrib
+  sinatra!
+  sinatra-contrib!
   sinatra-r18n
   slim
   thin

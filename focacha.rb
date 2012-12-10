@@ -6,8 +6,14 @@ require_relative 'models/user'
 module Focacha
   class Application < Sinatra::Base
     configure do
+      # config_file
+      register Sinatra::ConfigFile
+      config_file './config/config.yml.erb'
+
       # google_plus
-      GooglePlus.api_key = ENV['GOOGLE_API_KEY']
+      if settings.auth['google']['enable']
+        GooglePlus.api_key = settings.auth['google']['api_key']
+      end
 
       # logging
       enable :logging
@@ -22,39 +28,61 @@ module Focacha
       #Moped.logger.level = Logger::DEBUG
       Mongoid.load! 'config/mongoid.yml', environment
 
+      # namespace
+      register Sinatra::Namespace
+
       # omniauth
       use OmniAuth::Builder do
-        provider :facebook, ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET']
-        provider :google_oauth2, ENV['GOOGLE_CONSUMER_KEY'], ENV['GOOGLE_CONSUMER_SECRET'], { access_type: 'online', approval_prompt: '' }
-        provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
+        settings = Focacha::Application.settings
+
+        if settings.auth['facebook']['enable']
+          provider :facebook, settings.auth['facebook']['app_id'], settings.auth['facebook']['secret']
+        end
+
+        if settings.auth['google']['enable']
+          provider :google_oauth2, settings.auth['google']['consumer_key'], settings.auth['google']['consumer_secret'], { access_type: 'online', approval_prompt: '' }
+        end
+
+        if settings.auth['twitter']['enable']
+          provider :twitter, settings.auth['twitter']['consumer_key'], settings.auth['twitter']['consumer_secret']
+        end
       end
+
+      # reloader
+      register Sinatra::Reloader if development?
 
       # sessions
       enable :sessions
-      set :session_secret, 'f0c4ch4'
+      set :session_secret, settings.session['secret']
 
-      # sinatra-contrib
-      register Sinatra::Namespace
-      register Sinatra::Reloader if development?
-      
       # sinatra-r18n
       register Sinatra::R18n
-      R18n::I18n.default = 'en'
+      R18n::I18n.default = settings.i18n['default_locale']
       R18n.default_places { 'config/locales' }
 
       # static
       set :static, true
-      
+
       # twitter
-      Twitter.configure do |config|
-        config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
-        config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
+      if settings.auth['twitter']['enable']
+        Twitter.configure do |config|
+          config.consumer_key = settings.auth['twitter']['consumer_key']
+          config.consumer_secret = settings.auth['twitter']['consumer_secret']
+        end
       end
     end
 
     helpers do
       def current_user
         @user ||= User.find_by(uid: session[:uid]) if session[:uid]
+      end
+
+      def facebook_enabled?
+        settings.auth['facebook']['enable']
+      end
+
+      def google_enabled?
+        settings.auth['google']['enable']
       end
 
       def html_pipeline
@@ -68,6 +96,10 @@ module Focacha
           HTML::Pipeline::EmojiFilter,
           HTML::Pipeline::SyntaxHighlightFilter
         ], { asset_root: '/images/' }
+      end
+
+      def twitter_enabled?
+        settings.auth['twitter']['enable']
       end
     end
 

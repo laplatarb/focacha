@@ -7,7 +7,7 @@ h1 #{t.views.channels.index}
         a href="/channels/#{channel.id}" #{channel.name}
       div.current_topic
         - if channel.current_topic.present?
-          == t.views.channels.current_topic(html_pipeline.call(channel.current_topic)[:output])
+          == html_pipeline.call(channel.current_topic)[:output]
         - else
           = t.views.channels.no_current_topic
       div.meta #{t.views.channels.created_by(channel.user.name)}
