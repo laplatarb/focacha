@@ -8,7 +8,7 @@ module Focacha
     configure do
       # config_file
       register Sinatra::ConfigFile
-      config_file './config/config.yml.erb'
+      config_file 'config/config.yml.erb'
 
       # google_plus
       if settings.auth['google']['enable']

@@ -58,4 +58,4 @@ test:
   i18n:
     default_locale: 'es'
   session:
-  secret: <%= Digest::SHA1.hexdigest "f0c4ch4-#{Time.now}" %>
+    secret: <%= Digest::SHA1.hexdigest "f0c4ch4-#{Time.now}" %>
