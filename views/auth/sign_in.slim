@@ -1,13 +1,13 @@
 h1 focacha
 
 - if facebook_enabled?
-  div.facebook
-    a href="/auth/facebook" #{t.views.auth.facebook}
+  .facebook
+    a href="/auth/facebook" = t.views.auth.facebook
 
 - if google_enabled?
-  div.google
-    a href="/auth/google_oauth2" #{t.views.auth.google_oauth2}
+  .google
+    a href="/auth/google_oauth2" = t.views.auth.google_oauth2
 
 - if twitter_enabled?
-  div.twitter
-    a href="/auth/twitter" #{t.views.auth.twitter}
+  .twitter
+    a href="/auth/twitter" = t.views.auth.twitter
