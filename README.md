@@ -1,4 +1,4 @@
-# focacha
+# focacha [![Build Status](https://travis-ci.org/paman/focacha.png)](https://travis-ci.org/paman/focacha) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/paman/focacha)
 
 Focacha is an open source group chat. Basically, Focacha is an open source
 Campfire clone.
