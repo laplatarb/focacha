@@ -6,22 +6,12 @@ h1 = channel.name
   - else
     = t.views.channels.no_current_topic
 
-#current_topic_form
-  form action="/channels/#{channel.id}/change_current_topic" method="POST"
-    input type="hidden" name="_method" value="put"
-    label for="channel[current_topic]" = t.views.channels.change_current_topic
-    input type="text" name="channel[current_topic]" id="current_topic_id"
-    input type="submit" value="#{t.views.channels.change_current_topic}"
+== partial :'channels/current_topic_form', locals: { channel: channel }
 
 hr
 
 - channel.messages.each do |message|
-  .message
-    .text
-      == html_pipeline.call(message.text)[:output]
-    .meta = t.views.channels.created_by_at(message.user.name, message.created_at)
+  == partial :'messages/message', locals: { message: message }
   hr
 
-form action="/channels/#{channel.id}/messages" method="POST"
-  input type="text" name="message[text]" id="message_text" value="#{params[:message].nil? ? '' : params[:message][:text]}"
-  input type="submit"
+== partial :'messages/form', locals: { channel: channel }

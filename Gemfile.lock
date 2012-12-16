@@ -121,6 +121,8 @@ GEM
     sanitize (2.0.3)
       nokogiri (>= 1.4.4, < 1.6)
     simple_oauth (0.2.0)
+    sinatra-partial (0.4.0)
+      sinatra
     sinatra-r18n (1.1.3)
       r18n-core (= 1.1.3)
       sinatra (>= 1.3)
@@ -157,6 +159,7 @@ DEPENDENCIES
   rake
   sinatra!
   sinatra-contrib!
+  sinatra-partial
   sinatra-r18n
   slim
   thin

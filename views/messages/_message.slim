@@ -1,0 +1,4 @@
+.message
+  .text
+    == html_pipeline.call(message.text)[:output]
+  .meta = t.views.channels.created_by_at(message.user.name, message.created_at)
