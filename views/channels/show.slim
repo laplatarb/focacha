@@ -15,13 +15,30 @@ h1 = channel.name
 
 hr
 
-- channel.messages.each do |message|
-  .message
-    .text
-      == html_pipeline.call(message.text)[:output]
-    .meta = t.views.channels.created_by_at(message.user.name, message.created_at)
-  hr
+#channel
+  - channel.messages.each do |message|
+    .message
+      .text
+        == html_pipeline.call(message.text)[:output]
+      .meta = t.views.channels.created_by_at(message.user.name, message.created_at)
+    hr
 
-form action="/channels/#{channel.id}/messages" method="POST"
+form action="/channels/#{channel.id}/messages" method="POST" id="message_form" data-remote="true"
   input type="text" name="message[text]" id="message_text" value="#{params[:message].nil? ? '' : params[:message][:text]}"
   input type="submit"
+
+javascript:
+  var eventSource = new EventSource("/channels/#{channel.id}/stream");
+
+script type="text/javascript" src="/javascript/sse.js"
+
+javascript:
+  $("#message_form").live("submit", function(e) {
+    e.preventDefault();
+    $.post(
+      '/channels/#{channel.id}/messages',
+      { message: $('#message_text').val() },
+      function(data){alert(data); newMessage();},
+      'json'
+    );
+  });

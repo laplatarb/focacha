@@ -1,5 +1,6 @@
 require_relative 'models/channel'
 require_relative 'models/message'
+require_relative 'models/stream_response'
 require_relative 'models/current_topic_change_message'
 require_relative 'models/user'
 
@@ -54,6 +55,7 @@ module Focacha
       # sessions
       enable :sessions
       set :session_secret, settings.session['secret']
+      set :connections, []
 
       # sinatra-r18n
       register Sinatra::R18n
@@ -149,6 +151,21 @@ module Focacha
           slim :'channels/index', layout: :'layouts/focacha', locals: { channels: Channel.all, channel: Channel.new }
         end
       end
+      
+      get '/:id/stream', provides: 'text/event-stream' do
+        stream :keep_open do |out|
+          # store connection for later on
+          settings.connections << out
+          # remove connection when closed properly 
+          out.callback { settings.connections.delete out }
+          # remove connection when closed due to an error
+          out.errback do
+            logger.warn 'We just lost a connection!'
+            
+            settings.connections.delete out
+          end
+        end
+      end
 
       get '/:id' do
         channel = Channel.find_by(id: params[:id])
@@ -162,16 +179,19 @@ module Focacha
         redirect "/channels/#{channel.id}"
       end
 
-      post '/:id/messages' do
+      post '/:id/messages', provides: 'json' do
         channel = Channel.find_by(id: params[:id])
-        message = channel.messages.new params[:message]
+        message = channel.messages.new(text: params[:message])
         message.user = current_user
-
+        
+        p message.valid?
+        
         if message.valid?
           message.save
-          redirect "/channels/#{channel.id}"
+          settings.connections.each { |out| out << StreamResponse.new(:new_message, { message: message }).build }
+          status 201
         else
-          slim :'channels/show', layout: :'layouts/focacha', locals: { channel: channel }
+          status 424
         end
       end
     end
