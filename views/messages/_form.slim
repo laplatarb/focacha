@@ -1,0 +1,3 @@
+form action="/channels/#{channel.id}/messages" method="POST"
+  input type="text" name="message[text]" id="message_text" value="#{params[:message].nil? ? '' : params[:message][:text]}"
+  input type="submit"

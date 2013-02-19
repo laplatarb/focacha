@@ -1,0 +1,9 @@
+.channel
+  .name
+    a href="/channels/#{channel.id}" = channel.name
+  .current_topic
+    - if channel.current_topic.present?
+      p == html_pipeline.call(channel.current_topic)[:output]
+    - else
+      = t.views.channels.no_current_topic
+  .meta = t.views.channels.created_by(channel.user.name)

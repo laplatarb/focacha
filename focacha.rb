@@ -57,6 +57,11 @@ module Focacha
       set :session_secret, settings.session['secret']
       set :connections, []
 
+      # sinatra-partial
+      register Sinatra::Partial
+      set :partial_template_engine, :slim
+      enable :partial_underscores
+
       # sinatra-r18n
       register Sinatra::R18n
       R18n::I18n.default = settings.i18n['default_locale']
