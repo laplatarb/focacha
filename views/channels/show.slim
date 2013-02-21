@@ -1,10 +1,14 @@
 h1 = channel.name
 
+script type="text/javascript" src="/javascript/sse.js"
+
 #current_topic
   - if channel.current_topic.present?
     p == html_pipeline.call(channel.current_topic)[:output]
   - else
     = t.views.channels.no_current_topic
+
+== partial :'channels/current_topic_form', locals: { channel: channel }
 
 hr
 
@@ -16,14 +20,9 @@ hr
       .meta = t.views.channels.created_by_at(message.user.name, message.created_at)
     hr
 
-form action="/channels/#{channel.id}/messages" method="POST" id="message_form" data-remote="true"
+form action="/channels/#{channel.id}/messages" id="message_form" method="POST"
   input type="text" name="message[text]" id="message_text" value="#{params[:message].nil? ? '' : params[:message][:text]}"
   input type="submit"
-
-javascript:
-  var eventSource = new EventSource("/channels/#{channel.id}/stream");
-
-script type="text/javascript" src="/javascript/sse.js"
 
 javascript:
   $("#message_form").live("submit", function(e) {
@@ -31,13 +30,28 @@ javascript:
     $.post(
       '/channels/#{channel.id}/messages',
       { message: $('#message_text').val() },
-      function(data){alert(data); newMessage();},
+      function(data){
+        $("#channel").append(SSE.new_message_template(data));
+        $("#channel").animate({ scrollTop: $(document).height() }, "slow");
+      },
       'json'
     );
   });
-
-- channel.messages.each do |message|
-  == partial :'messages/message', locals: { message: message }
-  hr
-
-== partial :'messages/form', locals: { channel: channel }
+  
+  $("#change_topic_form").live("submit", function(e) {
+    e.preventDefault();
+    var request = $.ajax({
+      url: '/channels/#{channel.id}/change_current_topic',
+      type: 'PUT',
+      dataType: 'json',
+      data: { channel : { current_topic: $('#current_topic_id').val() } }
+    });
+    
+    request.done(function(data){
+      $("#current_topic").html(SSE.topic_changed_template(data));
+    });
+    
+    request.fail(function(data){
+      alert("Message could not be delivered!");
+    });
+  });

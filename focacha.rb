@@ -55,7 +55,7 @@ module Focacha
       # sessions
       enable :sessions
       set :session_secret, settings.session['secret']
-      set :connections, []
+      set server: 'thin', connections: []
 
       # sinatra-partial
       register Sinatra::Partial
@@ -112,7 +112,6 @@ module Focacha
 
     before do
       pass if request.path_info =~ /\/auth\//
-
       unless current_user
         halt 401, slim(:'auth/sign_in', layout: :'layouts/unauthorized')
       end
@@ -120,6 +119,21 @@ module Focacha
 
     get '/' do
       redirect '/channels'
+    end
+    
+    get '/stream', provides: 'text/event-stream' do
+      stream :keep_open do |out|
+        # store connection for later on
+        settings.connections << { owner: current_user, connection: out }
+        # remove connection when closed properly 
+        out.callback { settings.connections.delete out }
+        # remove connection when closed due to an error
+        out.errback do
+          logger.warn 'We just lost a connection!'
+            
+          settings.connections.delete out
+        end
+      end
     end
 
     namespace '/auth' do
@@ -156,32 +170,19 @@ module Focacha
           slim :'channels/index', layout: :'layouts/focacha', locals: { channels: Channel.all, channel: Channel.new }
         end
       end
-      
-      get '/:id/stream', provides: 'text/event-stream' do
-        stream :keep_open do |out|
-          # store connection for later on
-          settings.connections << out
-          # remove connection when closed properly 
-          out.callback { settings.connections.delete out }
-          # remove connection when closed due to an error
-          out.errback do
-            logger.warn 'We just lost a connection!'
-            
-            settings.connections.delete out
-          end
-        end
-      end
 
       get '/:id' do
         channel = Channel.find_by(id: params[:id])
         slim :'channels/show', layout: :'layouts/focacha', locals: { channel: channel }
       end
 
-      put '/:id/change_current_topic' do
+      put '/:id/change_current_topic', provides: 'json' do
         channel = Channel.find_by(id: params[:id])
         channel.update_attributes params[:channel]
         channel.messages.create({ text: channel.current_topic, user: current_user }, CurrentTopicChangeMessage)
-        redirect "/channels/#{channel.id}"
+        stream_response = StreamResponse.new(:topic_changed, { new_topic: channel.current_topic })
+        settings.connections.each { |connection| stream_response.build(connection[:connection]) unless connection[:owner] == current_user }
+        halt(200, stream_response.data.to_json)
       end
 
       post '/:id/messages', provides: 'json' do
@@ -189,12 +190,14 @@ module Focacha
         message = channel.messages.new(text: params[:message])
         message.user = current_user
         
-        p message.valid?
-        
         if message.valid?
           message.save
-          settings.connections.each { |out| out << StreamResponse.new(:new_message, { message: message }).build }
-          status 201
+          stream_response = StreamResponse.new(:new_message, { user: message.user.name , message: message })
+          settings.connections.each do |conn|
+            stream_response.build(conn[:connection]) unless conn[:owner] == message.user
+          end
+          
+          halt(201, stream_response.data.to_json)
         else
           status 424
         end

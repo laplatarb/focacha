@@ -6,9 +6,8 @@ class StreamResponse
     @data = data
   end
   
-  def build
-    ret = { type: @type, message: @data }
-
-    "data: #{ret.to_json}\n\n"
+  def build(connection)
+    connection << "event: #{@type}\n"
+    connection << "data:  #{@data.to_json}\n\n"
   end
 end

@@ -11,5 +11,4 @@ class StreamResponse
     
     "data: #{ret.to_json}\n\n"
   end
-  
 end

@@ -1,5 +1,5 @@
 #current_topic_form
-  form action="/channels/#{channel.id}/change_current_topic" method="POST"
+  form action="/channels/#{channel.id}/change_current_topic" id="change_topic_form" method="POST"
     input type="hidden" name="_method" value="put"
     label for="channel[current_topic]" = t.views.channels.change_current_topic
     input type="text" name="channel[current_topic]" id="current_topic_id"
